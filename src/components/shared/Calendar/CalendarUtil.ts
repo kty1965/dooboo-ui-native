@@ -17,11 +17,18 @@ export enum WeekOfDay {
   Sun
 }
 
+export type WeekOfDayNumber = (0 | 1 | 2 | 3 | 4 | 5 | 6);
+
+function weekOfDayConvertToNumber(weekOfDay: WeekOfDay): WeekOfDayNumber {
+  return weekOfDay as WeekOfDayNumber;
+}
+
 // startOfISOWeek is monday
-export const getWeekDates = (date: Date, weekStartsOn: WeekOfDay = WeekOfDay.Mon): Date[] => {
+export const getWeekDates = (date: Date, weekOfday: WeekOfDay = WeekOfDay.Mon): Date[] => {
+  const weekStartsOn = weekOfDayConvertToNumber(weekOfday);
   return eachDayOfInterval({
     start: startOfWeek(date, { weekStartsOn }),
-    end: endOfWeek(date, { weekStartsOn })
+    end: endOfWeek(date, { weekStartsOn }),
   });
 };
 

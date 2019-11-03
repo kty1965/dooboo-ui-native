@@ -1,4 +1,9 @@
-import { ICalendarProps, IWeekOfDayItemTextProps, IWeekOfayItemProps } from './ICalendar';
+import {
+  ICalendarDefaultProps,
+  ICalendarProps,
+  IWeekOfDayItemTextProps,
+  IWeekOfayItemProps,
+} from './ICalendar';
 import {
   Image,
   Text,
@@ -111,7 +116,7 @@ const colors = {
 };
 
 const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
-  const { date, locale, selectedDates, onPress, weekStartsOn } = props;
+  const { date, locale, selectedDates, onPress, weekStartsOn } = props as ICalendarDefaultProps;
   const [today, setToday] = useState<Date>(startOfDay(date));
   const [pressedDate, setPressedDate] = useState<Date | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(date);
@@ -285,6 +290,6 @@ Calendar.defaultProps = {
   locale: 'en',
   selectedDates: [],
   weekStartsOn: WeekOfDay.Sun,
-};
+} as ICalendarProps;
 
 export default Calendar;

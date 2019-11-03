@@ -1,10 +1,17 @@
 import { WeekOfDay } from './CalendarUtil';
 export interface ICalendarProps {
+  onPress?(date: Date): void;
+  date?: Date;
+  locale?: 'en' | 'ko' | 'ja';
+  selectedDates?: Date[];
+  weekStartsOn?: WeekOfDay;
+}
+export interface ICalendarDefaultProps {
   onPress(date: Date): void;
   date: Date;
   locale: 'en' | 'ko' | 'ja';
-  selectedDates?: Date[];
-  weekStartsOn?: WeekOfDay;
+  selectedDates: Date[];
+  weekStartsOn: WeekOfDay;
 }
 
 export interface IWeekOfayItemProps {
