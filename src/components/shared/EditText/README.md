@@ -1,5 +1,8 @@
 # EditText
 
+[![Npm Version](http://img.shields.io/npm/v/@dooboo-ui/native-edit-text.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-edit-text)
+[![Downloads](http://img.shields.io/npm/dm/@dooboo-ui/native-edit-text.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-edit-text)
+
 > [EditText] component is an enhanced version on pure react-native [TextInput] component.
 
 ![image](https://user-images.githubusercontent.com/27461460/62299053-28e6c680-b4af-11e9-8c59-61b79ad82c4d.png)
@@ -7,20 +10,34 @@
 ## Props
 
 |                      | necessary | types                  | default |
-| -------------------- | --------- | -----------------------| ------- |
-| pararentTestId       |           | string                 |         |
+| -------------------- | --------- | ---------------------- | ------- |
 | testID               |           | string                 |         |
 | errorTestID          |           | string                 |         |
 | style                |           | `StyleProp<ViewStyle>` |         |
+| underlineStyle       |           | `StyleProp<ViewStyle>` |         |
 | label                |           | string                 |         |
 | textStyle            |           | `StyleProp<TextStyle>` |         |
+| labelTextStyle       |           | `StyleProp<TextStyle>` |         |
+| errorTextStyle       |           | `StyleProp<TextStyle>` |         |
 | errorText            |           | string                 |         |
-| text                 |           | string                 |         |
+| value                |           | string                 |         |
 | placeholder          |           | string                 |         |
 | placeholderTextColor |           | string                 |         |
 | secureTextEntry      |           | boolean                |         |
 | onSubmitEditing      |           | func                   |         |
-| onTextChanged        |           | (e) => {}              |         |
+| onChangeText         |           | (e) => {}              |         |
+
+## Installation
+
+```sh
+yarn add @dooboo-ui/native
+```
+
+or
+
+```sh
+yarn add @dooboo-ui/native-edit-text
+```
 
 ## Getting started
 
@@ -28,6 +45,8 @@
 
   ```javascript
   import { EditText } from '@dooboo-ui/native';
+  // or
+  import EditText from '@dooboo-ui/native-edit-text';
   ```
 
 - Usage
@@ -75,13 +94,13 @@
         <Container>
           <HeaderTitle>Sign in with Email</HeaderTitle>
           <EditText
-            testID='EMAIL_INPUT'
+            testID="EMAIL_INPUT"
             textStyle={{
               color: '#495057',
             }}
-            label='Email'
-            placeholder='Write email address'
-            placeholderTextColor='#ADB5BD'
+            label="Email"
+            placeholder="Write email address"
+            placeholderTextColor="#ADB5BD"
             text={email}
             onTextChanged={(text: string) => onTextChanged('EMAIL', text)}
             style={{ marginTop: 50 }}
@@ -89,24 +108,24 @@
             onSubmitEditing={onSignIn}
           />
           <EditText
-            testID='PASSWORD_INPUT'
+            testID="PASSWORD_INPUT"
             textStyle={{
               color: '#ADB5BD',
             }}
             secureTextEntry={true}
-            label='Password'
-            placeholder='Please write your password'
-            placeholderTextColor='#ADB5BD'
+            label="Password"
+            placeholder="Please write your password"
+            placeholderTextColor="#ADB5BD"
             text={password}
             onTextChanged={(text: string) => onTextChanged('PASSWORD', text)}
             style={{ marginTop: 36 }}
             onSubmitEditing={onSignIn}
           />
           <StyledSignInButton
-            testID='btnEmail'
+            testID="btnEmail"
             onClick={() => onSignIn()}
             textStyle={fontStyle}
-            text='Login'
+            text="Login"
           />
           {/* Email SignUp text */}
           <View
@@ -117,7 +136,7 @@
               alignItems: 'center',
             }}
           >
-            <StyledText testID='NO_ACCOUNT'>
+            <StyledText testID="NO_ACCOUNT">
               Do not have and account?{' '}
             </StyledText>
             <TouchableOpacity onPress={() => null} style={{ padding: 4 }}>

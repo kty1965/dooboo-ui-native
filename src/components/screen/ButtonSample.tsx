@@ -24,7 +24,6 @@ function Page(): React.ReactElement {
         testID="btn"
         isLoading={false}
         text="😀 😎 👍 💯"
-        onClick={(): void => {}}
       />
       <Button
         style={{
@@ -32,11 +31,10 @@ function Page(): React.ReactElement {
         }}
         isDisabled={true}
         text="This is disabled!!"
-        onClick={(): void => {}}
       />
       <Button
         testID="btnGoogle"
-        leftComponent={<Image source={IC_GOOGLE} />}
+        iconLeft={<Image source={IC_GOOGLE} />}
         isLoading={googleLoading}
         indicatorColor="#023059"
         onClick={(): void => {
@@ -50,7 +48,7 @@ function Page(): React.ReactElement {
       />
       <Button
         testID="btnFacebook"
-        leftComponent={<Image source={IC_FACEBOOK} />}
+        iconLeft={<Image source={IC_FACEBOOK} />}
         indicatorColor="#023059"
         isLoading={facebookLoading}
         style={{

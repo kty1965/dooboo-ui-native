@@ -1,21 +1,12 @@
 # GiftedChat
 
+[![Npm Version](http://img.shields.io/npm/v/@dooboo-ui/native-gifted-chat.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-gifted-chat)
+[![Downloads](http://img.shields.io/npm/dm/@dooboo-ui/native-gifted-chat.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-gifted-chat)
+
 > [GiftedChat] component contains essential features to be implemented in `Chat` screen.
 
-![image](https://user-images.githubusercontent.com/27461460/67629842-31894600-f8c0-11e9-846d-a6b3fdac7dac.png)
+![gifted_chat](https://user-images.githubusercontent.com/27461460/69912933-218ef400-1474-11ea-9e89-c634be770927.gif)
 
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
 
 ## Props
 
@@ -35,12 +26,26 @@
 | placeholderTextColor |           | string              |         |
 | renderSendButton     |           | () => ReactElement  |         |
 
+## Installation
+
+```sh
+yarn add @dooboo-ui/native
+```
+
+or
+
+```sh
+yarn add @dooboo-ui/native-gifted-chat
+```
+
 ## Getting started
 
 - Import
 
   ```javascript
   import { GiftedChat } from '@dooboo-ui/native';
+  // or
+  import GiftedChat from '@dooboo-ui/native-gifted-chat';
   ```
 
 - Usage

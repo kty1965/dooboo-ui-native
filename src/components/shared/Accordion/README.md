@@ -1,22 +1,38 @@
 # Accordion
 
-> Simple drop down item component for react-native. This component supports drop down toggle with animation.<br/> > <img src="https://user-images.githubusercontent.com/27461460/47951961-a7a7e500-dfab-11e8-9189-86c0eddb6e12.gif"/>
+[![Npm Version](http://img.shields.io/npm/v/@dooboo-ui/native-accordion.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-accordion)
+[![Downloads](http://img.shields.io/npm/dm/@dooboo-ui/native-accordion.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-accordion)
+
+> Simple drop down item component for react-native. This component supports drop down toggle with animation.<br/>
+
+![image](https://user-images.githubusercontent.com/27461460/47951961-a7a7e500-dfab-11e8-9189-86c0eddb6e12.gif)
 
 ## Props
 
-|                   | necessary | types                  | default       |
-| ----------------- | --------- | ---------------------- | ------------- |
-| contentVisible    |           | boolean                | `false`       |
-| header            | ✓         | any                    | `<View/>`     |
-| backgroundColor   |           | string                 | `transparent` |
-| titleBackground   |           | string                 | `transparent` |
-| contentBackground |           | string                 | `transparent` |
-| underlineColor    |           | string                 | `transparent` |
-| visibleImage      |           | any                    | `undefined`   |
-| invisibleImage    |           | any                    | `undefined`   |
-| style             |           | `StyleProp<ViewStyle>` | `undefined`   |
-| children          | ✓         | ReactElement           | `undefined`   |
+|                      | necessary | types                  | default       |
+| -------------------- | --------- | ---------------------- | ------------- |
+| contentVisibleOnLoad |           | boolean                | `false`       |
+| header               | ✓         | any                    | `<View/>`     |
+| backgroundColor      |           | string                 | `transparent` |
+| titleBackground      |           | string                 | `transparent` |
+| contentBackground    |           | string                 | `transparent` |
+| underlineColor       |           | string                 | `transparent` |
+| visibleElement       |           | ReactElement           | `null`        |
+| invisibleElement     |           | ReactElement           | `null`        |
+| style                |           | `StyleProp<ViewStyle>` | `undefined`   |
+| children             | ✓         | ReactElement           | `undefined`   |
 
+## Installation
+
+```sh
+yarn add @dooboo-ui/native
+```
+
+or
+
+```sh
+yarn add @dooboo-ui/native-accordion
+```
 
 ## Getting started
 
@@ -24,6 +40,8 @@
 
   ```javascript
   import { Accordion } from '@dooboo-ui/native';
+  // or
+  import Accordion from '@dooboo-ui/native-accordion';
   ```
 
 - Data
@@ -49,7 +67,7 @@
   ```
 
 - Usage
-  ```javascript
+  ```tsx
   <View style={styles.container}>
     <ScrollView style={{ alignSelf: 'stretch' }}>
       {
@@ -60,8 +78,16 @@
                 key={i}
                 style={styles.Accordion}
                 contentVisible={false}
-                invisibleImage={IC_ARR_DOWN}
-                visibleImage={IC_ARR_UP}
+                visibleElement={
+                  <StyledImage
+                    source={IC_ARR_UP}
+                  />
+                }
+                invisibleElement={
+                  <StyledImage
+                    source={IC_ARR_DOWN}
+                  />
+                }
                 header={
                   <View>
                     <Text style={{
