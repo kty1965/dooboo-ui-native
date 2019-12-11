@@ -1,16 +1,17 @@
 import {
+  Action,
   ICalendarDefaultProps,
   ICalendarProps,
+  ICalendarState,
   IWeekOfDayItemTextProps,
   IWeekOfayItemProps,
-} from './ICalendar';
+} from './types';
 import {
   Image,
   Text,
   TouchableOpacity,
-  View,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import {
   WeekOfDay,
   getHeadPaddingOfMonth,
@@ -18,9 +19,7 @@ import {
   getWeekDates,
 } from './CalendarUtil';
 import {
-  addDays,
   addMonths,
-  differenceInDays,
   eachDayOfInterval,
   endOfMonth,
   format,
@@ -115,27 +114,49 @@ const colors = {
   paleGray: '#e1e4e7',
 };
 
+const calendarStateFromDate = (date: Date): ICalendarState => {
+  return {
+    currentDate: date,
+    currentStartOfMonth: startOfMonth(date),
+    currentEndOfMonth: endOfMonth(date),
+    currentNextStartOfMonth: addMonths(startOfMonth(date), 1),
+  };
+};
+
+const reducer = (state: ICalendarState, action: Action<void>): ICalendarState => {
+  const { type } = action;
+
+  switch (type) {
+    case 'previous':
+      return {
+        ...state,
+        ...calendarStateFromDate(subMonths(state.currentDate, 1)),
+      };
+    case 'next':
+      return {
+        ...state,
+        ...calendarStateFromDate(addMonths(state.currentDate, 1)),
+      };
+    default:
+      return state;
+  }
+};
+
+const init = (date: Date): ICalendarState => {
+  return calendarStateFromDate(date);
+};
+
 const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
   const { date, locale, selectedDates, onPress, weekStartsOn } = props as ICalendarDefaultProps;
   const [today, setToday] = useState<Date>(startOfDay(date));
   const [pressedDate, setPressedDate] = useState<Date | null>(null);
-  const [currentDate, setCurrentDate] = useState<Date>(date);
-  const [currentStartOfMonth, setCurrentStartOfMonth] = useState<Date>(startOfMonth(date));
-  const [currentEndOfMonth, setCurrentEndOfMonth] = useState<Date>(endOfMonth(date));
-  const [nextStartOfMonth, setNextStartOfMonth] = useState<Date>(addMonths(startOfMonth(date), 1));
+  const [{
+    currentDate,
+    currentStartOfMonth,
+    currentEndOfMonth,
+    currentNextStartOfMonth,
+  }, dispatch] = useReducer(reducer, date, init);
   const [localeObj, setLocale] = useState<Locale>(getLocaleFromLocaleString(locale));
-  const [lengthOfMonth, setLengthOfMonth] = useState<number>(
-    differenceInDays(addDays(currentEndOfMonth, 1), currentStartOfMonth));
-
-  useEffect(() => {
-    setCurrentStartOfMonth(startOfMonth(currentDate));
-    setCurrentEndOfMonth(endOfMonth(currentDate));
-    setNextStartOfMonth(addMonths(startOfMonth(currentDate), 1));
-  }, [currentDate]);
-
-  useEffect(() => {
-    differenceInDays(addDays(currentEndOfMonth, 1), currentStartOfMonth);
-  }, [currentStartOfMonth, currentEndOfMonth]);
 
   useEffect(() => {
     setLocale(getLocaleFromLocaleString(locale));
@@ -147,19 +168,19 @@ const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
       start: currentStartOfMonth,
       end: currentEndOfMonth,
     }),
-    ...getTailPaddingOfMonth(nextStartOfMonth, weekStartsOn),
+    ...getTailPaddingOfMonth(currentNextStartOfMonth, weekStartsOn),
   ];
 
-  const isSelectedDate = useCallback((date: Date): boolean => {
+  const isSelectedDate = (date: Date): boolean => {
     return _findIndex(selectedDates, (selectedDate) => isSameDay(selectedDate, date)) !== -1;
-  }, []);
-  const isPressedDate = useCallback((date: Date): boolean => {
+  };
+  const isPressedDate = (date: Date): boolean => {
     if (pressedDate == null || date == null) {
       return false;
     }
     return isEqual(pressedDate, date);
-  }, []);
-  const isToday = useCallback((date: Date): boolean => isEqual(date, today), []);
+  };
+  const isToday = (date: Date): boolean => isEqual(date, today);
 
   const getTextColor = (date: Date): string => {
     if (!isSameMonth(date, currentDate)) {
@@ -205,12 +226,12 @@ const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
     };
   }, []);
 
-  const onBackMonth = useCallback((): void => {
-    setCurrentDate(subMonths(currentDate, 1));
+  const onPreviousMonth = useCallback((): void => {
+    dispatch({ type: 'previous' });
   }, []);
 
   const onNextMonth = useCallback((): void => {
-    setCurrentDate(addMonths(currentDate, 1));
+    dispatch({ type: 'next' });
   }, []);
 
   const renderHeader = (): JSX.Element => {
@@ -218,10 +239,10 @@ const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
       <RowContainer>
         {getWeekDates(date, weekStartsOn).map((day) => {
           return (
-            <WeekOfDayHeaderCnt key={format(day, 'ddd', { locale: localeObj })}>
+            <WeekOfDayHeaderCnt key={format(day, 'eee', { locale: localeObj })}>
               <WeekOfDayHeader>
                 <WeekOfDayHeaderText>
-                  {format(day, 'ddd', { locale: localeObj })}
+                  {format(day, 'eee', { locale: localeObj })}
                 </WeekOfDayHeaderText>
               </WeekOfDayHeader>
             </WeekOfDayHeaderCnt>
@@ -237,16 +258,16 @@ const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
       <>
         {chunkedDates.map((week) => {
           return (
-            <RowContainer key={format(week[0], 'YYYY-WW')}>
+            <RowContainer key={format(week[0], 'yyyy-ww')}>
               {week.map((day) => {
                 return (
-                  <WeekOfDayItemCnt key={format(day, 'YYYY.MM.DD')}>
+                  <WeekOfDayItemCnt key={format(day, 'yyyy.MM.dd')}>
                     <WeekOfDayItem
                       backgroundColor={getBackgroundColor(day)}
                       onPress={onPressDate(day)}
                     >
                       <WeekOfDayItemText color={getTextColor(day)}>
-                        {format(day, 'D ')}
+                        {format(day, 'd ')}
                       </WeekOfDayItemText>
                     </WeekOfDayItem>
                   </WeekOfDayItemCnt>
@@ -262,11 +283,11 @@ const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
   const renderTitle = (): JSX.Element => {
     return (
       <TitleContainer>
-        <TouchableOpacity onPress={onBackMonth}>
+        <TouchableOpacity onPress={onPreviousMonth}>
           <Text>Back</Text>
         </TouchableOpacity>
         <Title>
-          { format(currentDate, 'YYYY.MM') }
+          { format(currentDate, 'yyyy.MM') }
         </Title>
         <TouchableOpacity onPress={onNextMonth}>
           <Title>Next</Title>
