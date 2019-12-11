@@ -1,5 +1,8 @@
 # ButtonGroup
 
+[![Npm Version](http://img.shields.io/npm/v/@dooboo-ui/native-button-group.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-button-group)
+[![Downloads](http://img.shields.io/npm/dm/@dooboo-ui/native-button-group.svg?style=flat-square)](https://npmjs.org/package/@dooboo-ui/native-button-group)
+
 > [ButtonGroup] is an `ios` section like component. You can have as may selectors as you want.
 
 ![ButtonGroup](https://user-images.githubusercontent.com/27461460/62305265-8c2a2600-b4ba-11e9-83df-af0ac2f4a3f6.gif)
@@ -7,7 +10,7 @@
 ## Props
 
 |                   | necessary | types                  | default                  |
-| ----------------- | --------- | -----------------------| ------------------------ |
+| ----------------- | --------- | ---------------------- | ------------------------ |
 | testID            |           | string                 |                          |
 | containerStyle    |           | `StyleProp<ViewStyle>` |                          |
 | style             |           | `StyleProp<ViewStyle>` |                          |
@@ -18,12 +21,26 @@
 | data              |           | string[]               | ['Option 1', 'Option 2'] |
 | onPress           |           | (i: number) => void    |                          |
 
+## Installation
+
+```sh
+yarn add @dooboo-ui/native
+```
+
+or
+
+```sh
+yarn add @dooboo-ui/native-button-group
+```
+
 ## Getting started
 
 - Import
 
   ```javascript
   import { ButtonGroup } from '@dooboo-ui/native';
+  // or
+  import ButtonGroup from '@dooboo-ui/native-button-group';
   ```
 
 - Usage
@@ -49,7 +66,7 @@
     return (
       <Container>
         <ButtonGroup
-          testID='BTN_GROUP'
+          testID="BTN_GROUP"
           style={{ marginTop: 40 }}
           onPress={(index: number) => selectOption(index)}
           data={data}

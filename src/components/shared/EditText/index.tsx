@@ -1,122 +1,163 @@
 import {
   NativeSyntheticEvent,
   Platform,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextInput,
+  TextInputProps,
+  TextInputSubmitEditingEventData,
   TextStyle,
-  View,
   ViewStyle,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    alignSelf: 'stretch',
-    width: '100%',
-  },
-  underline: {
-    borderWidth: 0.6,
-    borderColor: '#eaeaf9',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#b9b9c4',
-  },
-  input: Platform.select({
-    ios: {
-      paddingTop: 15,
-      paddingBottom: 10,
-      fontSize: 15,
-      fontWeight: '500',
-      color: '#2C374E',
-    },
-    android: {
-      paddingLeft: 0,
-      paddingBottom: 5,
-      fontSize: 15,
-      fontWeight: '500',
-      color: '#2C374E',
-    },
-  }),
-  errorText: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 5,
-    color: '#ff8989',
-  },
+import styled from 'styled-components/native';
+
+const Container = styled.View`
+  flex-direction: column;
+  align-self: stretch;
+  width: 100%;
+`;
+
+const UnderLine = styled.View`
+  border: 0.6px solid #eaeaf9;
+`;
+
+const Title = styled.Text`
+  font-size: 14px;
+  font-weight: 500;
+  color: #b9b9c4;
+`;
+
+const StyledTextInput = Platform.select({
+  ios: styled.TextInput`
+    padding: 15px 0 10px 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #2c374e;
+  `,
+  android: styled.TextInput`
+    padding-left: 0px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #2c374e;
+  `,
 });
 
+const StyledInvalidText = styled.Text`
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 5px;
+  color: #ff8989;
+`;
+
 interface Props {
-  parentTestID?: string;
   testID?: string;
   errorTestID?: string;
-  style?: StyleProp<ViewStyle>;
+  style?: ViewStyle;
+  underlineStyle?: ViewStyle;
   label?: string;
-  textStyle?: StyleProp<TextStyle>;
+  textStyle?: TextStyle;
+  labelTextStyle?: TextStyle;
+  errorTextStyle?: TextStyle;
   errorText?: string;
-  text?: string;
-  placeholder?: string;
-  placeholderTextColor?: string;
-  secureTextEntry?: boolean;
-  onSubmitEditing?: (e: NativeSyntheticEvent<any>) => void;
-  onTextChanged?: (text: string) => void;
+  value?: TextInputProps['value'];
+  placeholder?: TextInputProps['placeholder'];
+  placeholderTextColor?: TextInputProps['placeholderTextColor'];
+  secureTextEntry?: TextInputProps['secureTextEntry'];
+  onChangeText?: TextInputProps['onChangeText'];
+  onSubmitEditing?: (
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
+  ) => void;
+  focusColor?: string;
+  errorColor?: string;
+  autoCapitalize?: TextInputProps['autoCapitalize'];
+  textInputProps?: TextInputProps;
 }
 
-function EditText(props: Props): React.ReactElement {
+function EditText(props: Props): ReactElement {
   const [focused, setFocus] = useState(false);
 
+  const {
+    testID,
+    errorTestID,
+    style,
+    underlineStyle,
+    label,
+    textStyle,
+    labelTextStyle,
+    errorTextStyle,
+    errorText,
+    value,
+    placeholder,
+    placeholderTextColor,
+    secureTextEntry,
+    onChangeText,
+    onSubmitEditing,
+    focusColor,
+    errorColor,
+    autoCapitalize = 'none',
+    textInputProps,
+  } = props;
+
   return (
-    <View testID={props.parentTestID} style={[styles.container, props.style]}>
-      {props.label ? (
-        <Text
+    <Container style={style}>
+      <Title
+        style={[
           // prettier-ignore
-          style={[
-            styles.label,
-            props.errorText
-              ? { color: '#FF8989' }
-              : focused
-                ? { color: '#79B3F5' }
-                : null,
-          ]}
-        >
-          {props.label}
-        </Text>
-      ) : null}
-      <TextInput
-        testID={props.testID}
-        style={[styles.input, props.textStyle]}
-        autoCapitalize={'none'}
+          focused
+            ? { color: focusColor }
+            : errorText
+              ? { color: errorColor }
+              : null,
+          labelTextStyle,
+        ]}
+      >
+        {label}
+      </Title>
+      <StyledTextInput
+        {...textInputProps}
+        testID={testID}
+        autoCapitalize={autoCapitalize}
         onFocus={(): void => setFocus(true)}
         onBlur={(): void => setFocus(false)}
-        onSubmitEditing={props.onSubmitEditing}
-        placeholder={props.placeholder}
-        placeholderTextColor={props.placeholderTextColor}
-        value={props.text}
-        onChangeText={props.onTextChanged}
-        secureTextEntry={props.secureTextEntry}
-      ></TextInput>
-      <View
-        // prettier-ignore
+        placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
+        value={value}
+        style={textStyle}
+        onChangeText={onChangeText}
+        secureTextEntry={secureTextEntry}
+        onSubmitEditing={onSubmitEditing}
+      />
+      <UnderLine
         style={[
-          styles.underline,
+          // prettier-ignore
           focused
-            ? { borderColor: '#79B3F5' }
-            : props.errorText
-              ? { borderColor: '#FF8989' }
+            ? { borderColor: focusColor }
+            : errorText
+              ? { borderColor: errorColor }
               : null,
+          underlineStyle,
         ]}
       />
-      {props.errorText ? (
-        <Text testID={props.errorTestID} style={styles.errorText}>
-          {props.errorText}
-        </Text>
+      {errorText ? (
+        <StyledInvalidText
+          testID={errorTestID}
+          style={[
+            {
+              color: errorColor,
+            },
+            errorTextStyle,
+          ]}
+        >
+          {` ${errorText} `}
+        </StyledInvalidText>
       ) : null}
-    </View>
+    </Container>
   );
 }
+
+EditText.defaultProps = {
+  focusColor: '#79B3F5',
+  errorColor: '#FF8989',
+};
 
 export default EditText;
