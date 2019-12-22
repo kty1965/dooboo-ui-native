@@ -1,10 +1,9 @@
 import {
-  Action,
-  ICalendarDefaultProps,
-  ICalendarProps,
-  ICalendarState,
-  IWeekOfDayItemTextProps,
-  IWeekOfayItemProps,
+  CalendarDefaultProps,
+  CalendarProps,
+  CalendarState,
+  WeekOfDayItemTextProps,
+  WeekOfayItemProps,
 } from './types';
 import {
   Image,
@@ -18,6 +17,10 @@ import {
   getTailPaddingOfMonth,
   getWeekDates,
 } from './CalendarUtil';
+import actionCreatorFactory, {
+  Action,
+  isType,
+} from 'typescript-fsa';
 import {
   addMonths,
   eachDayOfInterval,
@@ -34,6 +37,11 @@ import _chunk from 'lodash/chunk';
 import _findIndex from 'lodash/findIndex';
 import { getLocaleFromLocaleString } from './CalendarLocale';
 import styled from 'styled-components/native';
+
+const actionCreator = actionCreatorFactory();
+
+const PreviousActionCreator = actionCreator<void>('CALENDAR_PREVIOUS');
+const NextActionCreator = actionCreator<void>('CALENDAR_NEXT');
 
 const CalendarContainer = styled.View`
   padding: 0 15px;
@@ -97,10 +105,10 @@ const WeekOfDayItem = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   border-radius: 40;
-  background-color: ${(props: IWeekOfayItemProps): string => props.backgroundColor};
+  background-color: ${(props: WeekOfayItemProps): string => props.backgroundColor};
 `;
 const WeekOfDayItemText = styled.Text`
-  color: ${(props: IWeekOfDayItemTextProps): string => props.color};
+  color: ${(props: WeekOfDayItemTextProps): string => props.color};
   font-size: 14;
   text-align: center;
   font-weight: 500;
@@ -114,7 +122,7 @@ const colors = {
   paleGray: '#e1e4e7',
 };
 
-const calendarStateFromDate = (date: Date): ICalendarState => {
+const calendarStateFromDate = (date: Date): CalendarState => {
   return {
     currentDate: date,
     currentStartOfMonth: startOfMonth(date),
@@ -123,31 +131,28 @@ const calendarStateFromDate = (date: Date): ICalendarState => {
   };
 };
 
-const reducer = (state: ICalendarState, action: Action<void>): ICalendarState => {
-  const { type } = action;
-
-  switch (type) {
-    case 'previous':
-      return {
-        ...state,
-        ...calendarStateFromDate(subMonths(state.currentDate, 1)),
-      };
-    case 'next':
-      return {
-        ...state,
-        ...calendarStateFromDate(addMonths(state.currentDate, 1)),
-      };
-    default:
-      return state;
+const reducer = (state: CalendarState, action: Action<void>): CalendarState => {
+  if (isType(action, PreviousActionCreator)) {
+    return {
+      ...state,
+      ...calendarStateFromDate(subMonths(state.currentDate, 1)),
+    };
+  } else if (isType(action, NextActionCreator)) {
+    return {
+      ...state,
+      ...calendarStateFromDate(addMonths(state.currentDate, 1)),
+    };
+  } else {
+    return state;
   }
 };
 
-const init = (date: Date): ICalendarState => {
+const init = (date: Date): CalendarState => {
   return calendarStateFromDate(date);
 };
 
-const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
-  const { date, locale, selectedDates, onPress, weekStartsOn } = props as ICalendarDefaultProps;
+const Calendar: React.FC<CalendarProps> = (props: CalendarProps) => {
+  const { date, locale, selectedDates, onPress, weekStartsOn } = props as CalendarDefaultProps;
   const [today, setToday] = useState<Date>(startOfDay(date));
   const [pressedDate, setPressedDate] = useState<Date | null>(null);
   const [{
@@ -227,11 +232,11 @@ const Calendar: React.FC<ICalendarProps> = (props: ICalendarProps) => {
   }, []);
 
   const onPreviousMonth = useCallback((): void => {
-    dispatch({ type: 'previous' });
+    dispatch(PreviousActionCreator());
   }, []);
 
   const onNextMonth = useCallback((): void => {
-    dispatch({ type: 'next' });
+    dispatch(NextActionCreator());
   }, []);
 
   const renderHeader = (): JSX.Element => {
@@ -311,6 +316,6 @@ Calendar.defaultProps = {
   locale: 'en',
   selectedDates: [],
   weekStartsOn: WeekOfDay.Sun,
-} as ICalendarProps;
+} as CalendarProps;
 
 export default Calendar;
