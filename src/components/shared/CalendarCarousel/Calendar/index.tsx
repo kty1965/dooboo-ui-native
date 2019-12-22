@@ -10,17 +10,13 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   WeekOfDay,
   getHeadPaddingOfMonth,
   getTailPaddingOfMonth,
   getWeekDates,
 } from './CalendarUtil';
-import actionCreatorFactory, {
-  Action,
-  isType,
-} from 'typescript-fsa';
 import {
   addMonths,
   eachDayOfInterval,
@@ -37,11 +33,6 @@ import _chunk from 'lodash/chunk';
 import _findIndex from 'lodash/findIndex';
 import { getLocaleFromLocaleString } from './CalendarLocale';
 import styled from 'styled-components/native';
-
-const actionCreator = actionCreatorFactory();
-
-const PreviousActionCreator = actionCreator<void>('CALENDAR_PREVIOUS');
-const NextActionCreator = actionCreator<void>('CALENDAR_NEXT');
 
 const CalendarContainer = styled.View`
   padding: 0 15px;
@@ -68,7 +59,7 @@ const TitleContainer = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 5px;
 `;
 
@@ -131,36 +122,16 @@ const calendarStateFromDate = (date: Date): CalendarState => {
   };
 };
 
-const reducer = (state: CalendarState, action: Action<void>): CalendarState => {
-  if (isType(action, PreviousActionCreator)) {
-    return {
-      ...state,
-      ...calendarStateFromDate(subMonths(state.currentDate, 1)),
-    };
-  } else if (isType(action, NextActionCreator)) {
-    return {
-      ...state,
-      ...calendarStateFromDate(addMonths(state.currentDate, 1)),
-    };
-  } else {
-    return state;
-  }
-};
-
-const init = (date: Date): CalendarState => {
-  return calendarStateFromDate(date);
-};
-
 const Calendar: React.FC<CalendarProps> = (props: CalendarProps) => {
   const { date, locale, selectedDates, onPress, weekStartsOn } = props as CalendarDefaultProps;
   const [today, setToday] = useState<Date>(startOfDay(date));
   const [pressedDate, setPressedDate] = useState<Date | null>(null);
-  const [{
+  const {
     currentDate,
     currentStartOfMonth,
     currentEndOfMonth,
     currentNextStartOfMonth,
-  }, dispatch] = useReducer(reducer, date, init);
+  } = calendarStateFromDate(date);
   const [localeObj, setLocale] = useState<Locale>(getLocaleFromLocaleString(locale));
 
   useEffect(() => {
@@ -231,14 +202,6 @@ const Calendar: React.FC<CalendarProps> = (props: CalendarProps) => {
     };
   }, []);
 
-  const onPreviousMonth = useCallback((): void => {
-    dispatch(PreviousActionCreator());
-  }, []);
-
-  const onNextMonth = useCallback((): void => {
-    dispatch(NextActionCreator());
-  }, []);
-
   const renderHeader = (): JSX.Element => {
     return (
       <RowContainer>
@@ -288,15 +251,9 @@ const Calendar: React.FC<CalendarProps> = (props: CalendarProps) => {
   const renderTitle = (): JSX.Element => {
     return (
       <TitleContainer>
-        <TouchableOpacity onPress={onPreviousMonth}>
-          <Text>Back</Text>
-        </TouchableOpacity>
         <Title>
           { format(currentDate, 'yyyy.MM') }
         </Title>
-        <TouchableOpacity onPress={onNextMonth}>
-          <Title>Next</Title>
-        </TouchableOpacity>
       </TitleContainer>
     );
   };
@@ -318,4 +275,4 @@ Calendar.defaultProps = {
   weekStartsOn: WeekOfDay.Sun,
 } as CalendarProps;
 
-export default Calendar;
+export default React.memo(Calendar);

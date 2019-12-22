@@ -4,6 +4,7 @@ import {
   subDays,
 } from 'date-fns';
 import Calendar from '../../src/components/shared/CalendarCarousel/Calendar';
+import CalendarCarousel from '../../src/components/shared/CalendarCarousel';
 import React from 'react';
 import { WeekOfDay } from '../../src/components/shared/CalendarCarousel/Calendar/CalendarUtil';
 import { storiesOf } from '@storybook/react-native';
@@ -21,6 +22,19 @@ const oneMonthLater = addMonths(today, 1);
 
 storiesOf('CalendarCarousel', module)
   .add('default', () => (
+    <Container>
+      <CalendarCarousel
+        locale="en"
+        weekStartsOn={WeekOfDay.Thu}
+        selectedDates={[
+          oneWeekAgo,
+          twoWeeksAgo,
+          threeDaysLater,
+          oneMonthLater,
+        ]} />
+    </Container>
+  ))
+  .add('calendar', () => (
     <Container>
       <Calendar
         locale="en"
